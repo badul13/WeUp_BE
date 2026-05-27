@@ -162,24 +162,30 @@ erDiagram
 
 ## ✅ 개인 기여 부분
 
-팀 프로젝트 내에서 **코어 비즈니스 로직(채팅 동기화, 인증/인가, 회원, 프로젝트 관리 등)과 클라우드 인프라(AWS S3, CI/CD) 구축, 그리고 객체지향적인 아키텍처 리팩토링**을 주도했습니다.
+다중 사용자 환경에서 발생하는 동시성 문제와 실시간 동기화 이슈를 주도적으로 해결하며 끊김 없는 협업 UX를 구현했습니다.
+또한 코어 비즈니스 로직(채팅 동기화, 인증/인가, 회원, 프로젝트 관리 등)과 클라우드 인프라(AWS S3, CI/CD) 구축을 전담하고, Rich Domain Model 기반의 객체지향 리팩토링을 통해 시스템의 완성도를 높였습니다.
 
-### 1. 💬 실시간 채팅 및 AI 메시징 고도화 (Chat & AI Logic Extension)
-*   일반 유저 채팅과 AI 비서(System/AI)의 채팅 로직을 명확히 분리하여 데이터 정합성 유지 (`isPrompt` 필드 및 플래그 추가).
-*   AI가 작성한 회의록(Meeting Minutes) 및 역할 할당(Role Assign) 내역을 STOMP를 통해 클라이언트에 실시간 동기화(Real-time Synchronization)하는 파이프라인 구축.
-*   채팅 읽음 처리(readUsers, lastReadAt) 및 페이징(Pagination) 로직 설계.
+### 1. 🔒 프로젝트 소개말 실시간 동시성 제어 및 UX 최적화 (Concurrency Control & Real-time Locking)
+   * Redis의 SETNX(setIfAbsent)를 활용하여 분산 락을 구현, 다중 사용자의 동시 수정 접근으로 인해 발생하는 Lost Update 문제를 데이터베이스 접근 이전에 사전 차단.
+   * 락 획득 및 해제 시 STOMP 웹소켓 기반의 EDIT_LOCK / EDIT_UNLOCK 이벤트를 연결된 클라이언트들에게 즉각 브로드캐스팅하여 다른 팀원들의 UI를 실시간으로 비활성화/활성화 처리하는 파이프라인 구축.
+   * Redis 락에 3분의 TTL을 설정하여, 클라이언트의 비정상 종료나 네트워크 단절 시 발생할 수 있는 데드락 현상 방지 및 시스템 안정성 확보.
 
 ### 2. ⚡ 대용량 트래픽 대비 Redis 도입 및 최적화
 *   매번 AWS API를 호출해야 하는 S3 Presigned URL 발급 병목을 해소하기 위해, Redis 기반의 URL 캐싱 레이어를 도입하여 응답 속도 최적화.
 *   기존 RDBMS에 저장되던 Refresh Token을 Redis로 마이그레이션하여 인증 서버의 부하 최소화 및 토큰 만료 관리 효율화.
-*   프로젝트 정보 수정 시 발생하는 동시성 충돌을 방지하기 위해 Redis 분산 락(Lock)을 도입하고, 실시간 편집 상태 브로드캐스팅 구현.
+*   프로젝트 정보 수정 시 발생하는 동시성 충돌을 방지하기 위해 Redis 분산 락(SETNX)을 도입하고, 실시간 웹소켓 이벤트 브로드캐스팅 파이프라인 구축.
 
 ### 3. 🛡️ 아키텍처 개선 및 리팩토링 (Rich Domain Model)
 *   무분별한 Setter 사용을 지양하고, 비즈니스 로직을 엔티티 내부로 응집시키는 **Rich Domain Model(풍부한 도메인 모델)** 기반으로 `Todo`, `Notification`, 회원 탈퇴 로직 등을 리팩토링.
 *   순환 참조(Circular Reference) 오류 해결 및 전반적인 코드 의존성 구조 개선.
 *   소프트 삭제(Soft Delete) 도입 및 연관된 엔티티들(User/Member)의 상태가 일관되게 변경되도록 도메인 이벤트 및 예외 처리 로직 강화.
 
-### 4. 🚀 인프라 및 CI/CD 파이프라인 구축
+### 4. 💬 실시간 채팅 및 AI 메시징 고도화 (Chat & AI Logic Extension)
+*   일반 유저 채팅과 AI 비서(System/AI)의 채팅 로직을 명확히 분리하여 데이터 정합성 유지 (`isPrompt` 필드 및 플래그 추가).
+*   AI가 작성한 회의록(Meeting Minutes) 및 역할 할당(Role Assign) 내역을 STOMP를 통해 클라이언트에 실시간 동기화(Real-time Synchronization)하는 파이프라인 구축.
+*   채팅 읽음 처리(readUsers, lastReadAt) 및 페이징(Pagination) 로직 설계.
+
+### 5. 🚀 인프라 및 CI/CD 파이프라인 구축
 *   GitHub Actions를 활용하여 **배포 자동화 파이프라인 구축**.
 *   Spring Boot Profile 환경 분리 및 로깅 시스템(Logback) 세팅.
 
