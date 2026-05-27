@@ -140,14 +140,14 @@ erDiagram
 ## 🛠️ 기술 스택
 
 ### 🎨 Backend Framework & Library
-- **Java 21**, **Spring Boot 3.4.0**
-- **Spring Security 6** (JWT 기반 Stateless 인증)
+- **Java 21**, **Spring Boot**
+- **Spring Security** (JWT 기반 Stateless 인증)
 - **Spring Data JPA** (Hibernate)
 - **WebSocket & STOMP** (실시간 통신)
 
 ### 💾 Database & Cache
-- **MySQL 8.0** (기본 RDBMS)
-- **Redis 7** (채팅 캐싱, 분산 락, 화상회의 세션 관리)
+- **MySQL** (기본 RDBMS)
+- **Redis** (채팅 캐싱, 분산 락, 화상회의 세션 관리)
 
 ### 🤖 AI & Real-time Media
 - **Python (Flask)** (자연어 처리 외부 AI 서버 연동)
